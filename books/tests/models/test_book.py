@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.db.utils import IntegrityError
-from pkg_resources import require
 from books.models import Book
 from djmoney.money import Money
 
