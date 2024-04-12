@@ -1,7 +1,7 @@
-from django.test import TestCase
 from django.db.utils import IntegrityError
+from django.test import TestCase
+
 from books.models import Book
-from djmoney.money import Money
 
 
 # Create your tests here.
