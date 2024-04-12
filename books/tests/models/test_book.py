@@ -22,8 +22,32 @@ class TestBook(TestCase):
             book_args = make_book(author=None)
             Book.objects.create(**book_args)
 
-    def test_allows_notes_to_be_nullable(self):
-        book_args = make_book(notes=None)
+    def test_allows_summary_to_be_nullable(self):
+        book_args = make_book(summary=None)
+        book = Book.objects.create(**book_args)
+
+        self.assertIsNotNone(book)
+
+    def test_allows_publication_year_to_be_nullable(self):
+        book_args = make_book(publication_year=None)
+        book = Book.objects.create(**book_args)
+
+        self.assertIsNotNone(book)
+
+    def test_allows_isbn_to_be_nullable(self):
+        book_args = make_book(isbn=None)
+        book = Book.objects.create(**book_args)
+
+        self.assertIsNotNone(book)
+
+    def test_allows_publisher_to_be_nullable(self):
+        book_args = make_book(publisher=None)
+        book = Book.objects.create(**book_args)
+
+        self.assertIsNotNone(book)
+
+    def test_allows_num_pages_to_be_nullable(self):
+        book_args = make_book(num_pages=None)
         book = Book.objects.create(**book_args)
 
         self.assertIsNotNone(book)
@@ -39,10 +63,7 @@ def make_book(**kwargs):
         "publisher": "test_publisher",
         "language": "English",
         "num_pages": 615,
-        "price": Money(1600, "INR"),
         "summary": "it is a fantasy fiction about dragons",
-        "ownership_type": "E-Book",
-        "notes": "some notes",
     }
 
     return default_book | dict(kwargs)

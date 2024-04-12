@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from djmoney.models.fields import MoneyField
 
 from books.models import Book
 
@@ -17,5 +18,6 @@ class UserLibrary(models.Model):
         choices=OwnershipType, default=OwnershipType.owned_physical_book, max_length=50
     )
     notes = models.TextField(null=True)
+    price = MoneyField(max_digits=14, decimal_places=2, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
