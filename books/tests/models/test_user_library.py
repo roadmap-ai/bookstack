@@ -1,60 +1,56 @@
+from os import name
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
 
-from books.models import Book, UserLibrary
+from books.models import Book, UserLibrary, Profile
 from books.tests.models.test_book import make_book
 
 
 class TestUserLibrary(TestCase):
     def test_with_valid_values(self):
-        book_args = make_book()
-        book = Book.objects.create(**book_args)
+        book1 = Book.objects.create(**make_book(title="Iron Flame"))
+        book2 = Book.objects.create(**make_book(title="Fourth Wing"))
         user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
         user_library_args = make_user_library()
-        user_library = UserLibrary.objects.create(
-            user=user, book=book, **user_library_args
-        )
-        self.assertIsNotNone(user_library)
+        UserLibrary.objects.create(profile=profile, book=book1, **user_library_args)
+        UserLibrary.objects.create(profile=profile, book=book2, **user_library_args)
 
-        self.assertEqual(user_library.user_id, user.id)
-        self.assertEqual(user_library.book_id, book.id)
+        self.assertEqual(set(profile.books.all()), {book1, book2})
 
     def test_allows_notes_to_be_null(self):
         book_args = make_book()
         book = Book.objects.create(**book_args)
         user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
         user_library_args = make_user_library(notes=None)
         user_library = UserLibrary.objects.create(
-            user=user, book=book, **user_library_args
+            profile=profile, book=book, **user_library_args
         )
         self.assertIsNotNone(user_library)
-
-        self.assertEqual(user_library.user_id, user.id)
-        self.assertEqual(user_library.book_id, book.id)
 
     def test_allows_price_to_be_null(self):
         book_args = make_book()
         book = Book.objects.create(**book_args)
         user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
         user_library_args = make_user_library(price=None)
         user_library = UserLibrary.objects.create(
-            user=user, book=book, **user_library_args
+            profile=profile, book=book, **user_library_args
         )
         self.assertIsNotNone(user_library)
-
-        self.assertEqual(user_library.user_id, user.id)
-        self.assertEqual(user_library.book_id, book.id)
 
     def test_does_not_allows_ownership_type_to_be_null(self):
         book_args = make_book()
         book = Book.objects.create(**book_args)
         user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
         user_library_args = make_user_library(ownership_type=None)
         with self.assertRaisesMessage(
             IntegrityError, 'null value in column "ownership_type"'
         ):
-            UserLibrary.objects.create(user=user, book=book, **user_library_args)
+            UserLibrary.objects.create(profile=profile, book=book, **user_library_args)
 
 
 def make_user_library(**kwargs):
