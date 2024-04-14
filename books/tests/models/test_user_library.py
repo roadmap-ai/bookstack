@@ -1,9 +1,11 @@
 from os import name
+import unittest
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
 
 from books.models import Book, UserLibrary, Profile
+from books.models.user_library import BookReadingWorkflow
 from books.tests.models.test_book import make_book
 
 
@@ -51,6 +53,14 @@ class TestUserLibrary(TestCase):
             IntegrityError, 'null value in column "ownership_type"'
         ):
             UserLibrary.objects.create(profile=profile, book=book, **user_library_args)
+
+
+class TestBookReadingWorkflow(unittest.TestCase):
+    def test_start_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.to_be_read
+        sm.start()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.currently_reading)
 
 
 def make_user_library(**kwargs):
