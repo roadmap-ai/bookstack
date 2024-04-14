@@ -1,8 +1,5 @@
-from django.contrib.auth.models import User
 from django.db import models
 from djmoney.models.fields import MoneyField
-
-from books.models import Book
 
 
 class UserLibrary(models.Model):
@@ -12,8 +9,8 @@ class UserLibrary(models.Model):
         owned_physical_book = "Owned Physical Book"
         borrowed_book = "Borrowed Book"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.PROTECT)
+    profile = models.ForeignKey("books.Profile", on_delete=models.CASCADE)
+    book = models.ForeignKey("books.Book", on_delete=models.PROTECT)
     ownership_type = models.CharField(
         choices=OwnershipType, default=OwnershipType.owned_physical_book, max_length=50
     )
