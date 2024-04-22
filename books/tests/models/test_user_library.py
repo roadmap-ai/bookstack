@@ -56,10 +56,49 @@ class TestUserLibrary(TestCase):
 
 
 class TestBookReadingWorkflow(unittest.TestCase):
+
     def test_start_event(self):
         sm = BookReadingWorkflow()
         sm.current_state = BookReadingWorkflow.to_be_read
         sm.start()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.currently_reading)
+
+    def test_pause_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.currently_reading
+        sm.pause()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.paused_reading)
+
+    def test_archive_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.read
+        sm.archive()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.archived)
+
+        sm.current_state = BookReadingWorkflow.paused_reading
+        sm.archive()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.archived)
+
+    def test_finish_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.currently_reading
+        sm.finish()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.read)
+
+    def test_restart_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.read
+        sm.restart()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.currently_reading)
+
+    def test_resume_event(self):
+        sm = BookReadingWorkflow()
+        sm.current_state = BookReadingWorkflow.paused_reading
+        sm.resume()
+        self.assertEqual(sm.current_state, BookReadingWorkflow.currently_reading)
+
+        sm.current_state = BookReadingWorkflow.archived
+        sm.resume()
         self.assertEqual(sm.current_state, BookReadingWorkflow.currently_reading)
 
 

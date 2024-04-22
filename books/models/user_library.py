@@ -1,6 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
-from statemachine import StateMachine, State
+from statemachine import State, StateMachine
 
 
 class UserLibrary(models.Model):
