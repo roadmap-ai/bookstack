@@ -1,0 +1,27 @@
+version: 2.1
+
+jobs:
+  lint:
+    docker:
+      - image: pyfound/black:22.12.0
+    steps:
+      - checkout
+      - run: black --check .
+  test:
+    environment:
+      PIPENV_VENV_IN_PROJECT: 1
+    docker:
+      - image: cimg/python:3.12
+      - image: cimg/postgres:15.6
+    steps:
+      - checkout
+      - run: |
+          pip install --user pipenv
+          pipenv install
+          pipenv run python manage.py test
+
+workflows:
+  cx-pipeline:
+    jobs:
+      - lint
+      - test
