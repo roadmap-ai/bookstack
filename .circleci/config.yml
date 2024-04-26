@@ -10,9 +10,15 @@ jobs:
   test:
     environment:
       PIPENV_VENV_IN_PROJECT: 1
+      DB_USER: postgres
+      DB_HOST: localhost
+      DB_PASSWORD: password
     docker:
       - image: cimg/python:3.12
       - image: cimg/postgres:15.6
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
     steps:
       - checkout
       - run: |
