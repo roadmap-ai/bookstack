@@ -56,7 +56,6 @@ class TestUserLibrary(TestCase):
 
 
 class TestBookReadingWorkflow(unittest.TestCase):
-
     def test_start_event(self):
         sm = BookReadingWorkflow()
         sm.current_state = BookReadingWorkflow.to_be_read
