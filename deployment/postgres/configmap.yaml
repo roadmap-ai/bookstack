@@ -8,4 +8,4 @@ metadata:
 data:
   POSTGRES_DB: bookstack
   POSTGRES_USER: postgres
-  POSTGRES_PASSWORD: password
+  POSTGRES_PASSWORD: password # TODO: use secret manager to store password

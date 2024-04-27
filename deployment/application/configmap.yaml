@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bookstack-config
+  labels:
+    app: bookstack
+data:
+  DB_USER: postgres
+  DB_PASSWORD: password # TODO: use secret manager to store passwords
+  DB_HOST: postgres.postgres.svc.cluster.local
