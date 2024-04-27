@@ -68,7 +68,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: 'postgres:15'
+          image: "postgres:15"
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 5432
@@ -78,6 +78,10 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdata
+          resources:
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
       volumes:
         - name: postgresdata
           persistentVolumeClaim:
