@@ -1,9 +1,25 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
 from statemachine import State, StateMachine
+from statemachine.mixins import MachineMixin
 
 
-class UserLibrary(models.Model):
+class BookReadingWorkflow(StateMachine):
+    to_be_read = State("To Be Read", initial=True)
+    currently_reading = State("Currently Reading")
+    read = State("Read")
+    paused_reading = State("Paused Reading")
+    archived = State("Archived")
+
+    start = to_be_read.to(currently_reading)
+    finish = currently_reading.to(read)
+    pause = currently_reading.to(paused_reading)
+    archive = read.to(archived) | paused_reading.to(archived)
+    restart = read.to(currently_reading)
+    resume = paused_reading.to(currently_reading) | archived.to(currently_reading)
+
+
+class UserLibrary(models.Model, MachineMixin):
     class OwnershipType(models.TextChoices):
         e_book = "E-Book"
         audio_book = "Audio Book"
@@ -20,18 +36,7 @@ class UserLibrary(models.Model):
     # read_till_chapter = models.IntegerField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-
-class BookReadingWorkflow(StateMachine):
-    to_be_read = State("To Be Read", initial=True)
-    currently_reading = State("Currently Reading")
-    read = State("Read")
-    paused_reading = State("Paused Reading")
-    archived = State("Archived")
-
-    start = to_be_read.to(currently_reading)
-    finish = currently_reading.to(read)
-    pause = currently_reading.to(paused_reading)
-    archive = read.to(archived) | paused_reading.to(archived)
-    restart = read.to(currently_reading)
-    resume = paused_reading.to(currently_reading) | archived.to(currently_reading)
+    state_machine_name = "BookReadingWorkflow"
+    state_machine_attr = "sm"
+    state_field_name = "state"
+    state = models.CharField(default=BookReadingWorkflow.to_be_read.value)
