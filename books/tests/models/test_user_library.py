@@ -1,10 +1,10 @@
-from os import name
 import unittest
+
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.test import TestCase
 
-from books.models import Book, UserLibrary, Profile
+from books.models import Book, Profile, UserLibrary, user_library
 from books.models.user_library import BookReadingWorkflow
 from books.tests.models.test_book import make_book
 
@@ -16,10 +16,15 @@ class TestUserLibrary(TestCase):
         user = User.objects.create(username="user", password="password")
         profile = Profile.objects.create(user=user)
         user_library_args = make_user_library()
-        UserLibrary.objects.create(profile=profile, book=book1, **user_library_args)
-        UserLibrary.objects.create(profile=profile, book=book2, **user_library_args)
+        user1 = UserLibrary.objects.create(
+            profile=profile, book=book1, **user_library_args
+        )
+        user2 = UserLibrary.objects.create(
+            profile=profile, book=book2, **user_library_args
+        )
 
         self.assertEqual(set(profile.books.all()), {book1, book2})
+        self.assertEqual(user1.state, BookReadingWorkflow.to_be_read.value)
 
     def test_allows_notes_to_be_null(self):
         book_args = make_book()
@@ -53,6 +58,20 @@ class TestUserLibrary(TestCase):
             IntegrityError, 'null value in column "ownership_type"'
         ):
             UserLibrary.objects.create(profile=profile, book=book, **user_library_args)
+
+    def test_state_value_changes_as_per_state_machine_workflow(self):
+        book_args = make_book()
+        book = Book.objects.create(**book_args)
+        user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
+        user_library_args = make_user_library()
+        user_library = UserLibrary.objects.create(
+            profile=profile, book=book, **user_library_args
+        )
+        user_library.sm.start()
+        self.assertEqual(
+            user_library.state, BookReadingWorkflow.currently_reading.value
+        )
 
 
 class TestBookReadingWorkflow(unittest.TestCase):
