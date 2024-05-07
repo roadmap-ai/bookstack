@@ -22,8 +22,6 @@ from rest_framework import routers
 from books import views
 
 router = routers.DefaultRouter()
-router.register(r"users", views.UserViewSet)
-router.register(r"group", views.GroupViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
