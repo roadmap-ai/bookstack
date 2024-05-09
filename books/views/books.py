@@ -1,27 +1,28 @@
 import json
+
 from django.http import Http404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from books.forms import BookForm
 
 from books.models.book import Book
+from books.serializers import BookSerializer
 
 
 class BooksView(APIView):
     def post(self, request):
         data = json.loads(request.body)
-        book_form = BookForm(data=data)
+        book_serializer = BookSerializer(data=data)
 
-        if not book_form.is_valid():
-            return Response(book_form.errors, status=400)
+        if not book_serializer.is_valid():
+            return Response(book_serializer.errors, status=400)
 
-        book_form.save()
-        return Response(book_form.data, status=201)
+        book_serializer.save()
+        return Response(book_serializer.data, status=201)
 
     def get(self, request):
         books = Book.objects.all()
-        book_form = BookForm(books, many=True)
-        return Response(book_form.data, status=200)
+        book_serializer = BookSerializer(books, many=True)
+        return Response(book_serializer.data, status=200)
 
 
 class BookView(APIView):
@@ -31,5 +32,5 @@ class BookView(APIView):
         except Book.DoesNotExist:
             raise Http404
 
-        book_form = BookForm(book)
-        return Response(book_form.data, status=200)
+        book_serializer = BookSerializer(book)
+        return Response(book_serializer.data, status=200)

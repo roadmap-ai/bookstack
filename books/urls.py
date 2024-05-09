@@ -6,4 +6,5 @@ urlpatterns = [
     path("health", views.health, name="health"),
     path("books/", views.BooksView.as_view()),
     path("books/<int:pk>/", views.BookView.as_view()),
+    path("signup/", views.create_user, name="create_user"),
 ]
