@@ -8,6 +8,7 @@ class BookSerializer(serializers.Serializer):
     author = serializers.CharField()
     publication_year = serializers.IntegerField()
     genre = serializers.CharField()
+    language = serializers.CharField()
 
     def create(self, validated_data):
         book = Book.objects.create(**validated_data)

@@ -1,10 +1,11 @@
 import json
 
 from django.db import IntegrityError
-from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from books.serializers.signup import SignupSerializer
+from rest_framework.response import Response
+
 from books.exceptions import UserAlreadyExistException
+from books.serializers.signup import SignupSerializer
 
 
 @api_view(["POST"])
