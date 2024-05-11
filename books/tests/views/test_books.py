@@ -98,6 +98,49 @@ class TestBooksView(APITestCase):
         )
 
 
+class TestBookView(APITestCase):
+    def test_get_for_valid_request(self):
+        User.objects.create_user(**make_user())
+        book1 = Book.objects.create(**make_book())
+        book2 = Book.objects.create(**make_book(title="Fourth Wing"))
+        self.client.login(username="mahi", password="1234")
+        response1 = self.client.get(f"/bookstack/books/{book1.id}", follow=True)
+        self.assertEqual(response1.status_code, 200)
+        self.assertEqual(
+            response1.json(),
+            {
+                "title": "Iron Flame",
+                "author": "Rebbeca Yaroos",
+                "publication_year": 2023,
+                "genre": "Fiction",
+                "language": "English",
+            },
+        )
+        response2 = self.client.get(f"/bookstack/books/{book2.id}", follow=True)
+        self.assertEqual(response2.status_code, 200)
+        self.assertEqual(
+            response2.json(),
+            {
+                "title": "Fourth Wing",
+                "author": "Rebbeca Yaroos",
+                "publication_year": 2023,
+                "genre": "Fiction",
+                "language": "English",
+            },
+        )
+
+        self.client.logout()
+
+    def test_get_should_not_let_user_in_without_login(self):
+        User.objects.create_user(**make_user())
+        book = Book.objects.create(**make_book())
+        response = self.client.get(f"/bookstack/books/{book.id}", follow=True, pk=1)
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(
+            response.json(), {"detail": "Authentication credentials were not provided."}
+        )
+
+
 def make_user(**kwargs):
     default_user = {
         "username": "mahi",
