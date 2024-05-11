@@ -1,7 +1,7 @@
 import json
 
 from django.http import Http404
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -20,7 +20,7 @@ class BooksView(APIView):
             return Response(book_serializer.errors, status=400)
 
         book_serializer.save()
-        return Response(book_serializer.data, status=201)
+        return Response(book_serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         books = Book.objects.all()
