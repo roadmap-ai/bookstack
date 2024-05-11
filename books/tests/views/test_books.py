@@ -3,6 +3,7 @@ from rest_framework.test import APITestCase
 
 from books.models.book import Book
 from books.tests.models.test_book import make_book
+from books.tests.views.test_signup import make_user
 
 
 class TestBooksView(APITestCase):
@@ -139,15 +140,3 @@ class TestBookView(APITestCase):
         self.assertEqual(
             response.json(), {"detail": "Authentication credentials were not provided."}
         )
-
-
-def make_user(**kwargs):
-    default_user = {
-        "username": "mahi",
-        "first_name": "mahima",
-        "last_name": "choudhary",
-        "email": "mahi87mnit@x.in",
-        "password": "1234",
-    }
-
-    return default_user | dict(kwargs)
