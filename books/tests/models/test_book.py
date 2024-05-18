@@ -22,6 +22,21 @@ class TestBook(TestCase):
             book_args = make_book(author=None)
             Book.objects.create(**book_args)
 
+    def test_missing_title_raises_error(self):
+        with self.assertRaises(IntegrityError):
+            book_args = make_book(title=None)
+            Book.objects.create(**book_args)
+
+    def test_missing_genre_raises_error(self):
+        with self.assertRaises(IntegrityError):
+            book_args = make_book(genre=None)
+            Book.objects.create(**book_args)
+
+    def test_missing_language_raises_error(self):
+        with self.assertRaises(IntegrityError):
+            book_args = make_book(language=None)
+            Book.objects.create(**book_args)
+
     def test_allows_summary_to_be_nullable(self):
         book_args = make_book(summary=None)
         book = Book.objects.create(**book_args)
