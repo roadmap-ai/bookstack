@@ -19,7 +19,7 @@ class BookReadingWorkflow(StateMachine):
     resume = paused_reading.to(currently_reading) | archived.to(currently_reading)
 
 
-class UserLibrary(models.Model, MachineMixin):
+class ProfileLibrary(models.Model, MachineMixin):
     class OwnershipType(models.TextChoices):
         e_book = "E-Book"
         audio_book = "Audio Book"

@@ -1,3 +1,3 @@
 from .book import Book
 from .profile import Profile
-from .user_library import UserLibrary
+from .profile_library import ProfileLibrary
