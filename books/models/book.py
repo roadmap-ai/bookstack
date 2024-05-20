@@ -4,8 +4,6 @@ from django.db import models
 # Create your models here.
 class Book(models.Model):
     class Meta:
-        managed = False
-        db_table = "Book"
         unique_together = (("title"), ("author"))
 
     title = models.CharField(max_length=50)

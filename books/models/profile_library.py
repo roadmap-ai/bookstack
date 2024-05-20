@@ -21,8 +21,6 @@ class BookReadingWorkflow(StateMachine):
 
 class ProfileLibrary(models.Model, MachineMixin):
     class Meta:
-        managed = False
-        db_table = "ProfileLibrary"
         unique_together = (("profile"), ("book"))
 
     class OwnershipType(models.TextChoices):
