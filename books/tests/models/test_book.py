@@ -67,6 +67,21 @@ class TestBook(TestCase):
 
         self.assertIsNotNone(book)
 
+    def test_does_not_allow_duplicate_title_author(self):
+        book1_args = make_book()
+        book1 = Book.objects.create(**book1_args)
+        book2_args = make_book()
+        book3_args = make_book(title="Fourth Wing")
+        book4_args = make_book(author="Sarah J Maas")
+        book3 = Book.objects.create(**book3_args)
+        book4 = Book.objects.create(**book4_args)
+        self.assertIsInstance(book3, Book)
+        self.assertIsInstance(book4, Book)
+        with self.assertRaisesMessage(
+            IntegrityError, "duplicate key value violates unique constraint"
+        ):
+            Book.objects.create(**book2_args)
+
 
 def make_book(**kwargs):
     default_book = {

@@ -75,6 +75,30 @@ class TestProfileLibrary(TestCase):
             profile_library.state, BookReadingWorkflow.currently_reading.value
         )
 
+    def test_does_not_allow_duplicate_book_profile(self):
+        book1 = Book.objects.create(**make_book())
+        book2 = Book.objects.create(**make_book(title="Fourth Wing"))
+        book3 = Book.objects.create(**make_book(author="Sarah J Maas"))
+        user = User.objects.create(username="user", password="password")
+        profile = Profile.objects.create(user=user)
+        profile_library_args = make_profile_library()
+        ProfileLibrary.objects.create(
+            profile=profile, book=book1, **profile_library_args
+        )
+        ProfileLibrary.objects.create(
+            profile=profile, book=book2, **profile_library_args
+        )
+        ProfileLibrary.objects.create(
+            profile=profile, book=book3, **profile_library_args
+        )
+        self.assertEqual(set(profile.books.all()), {book1, book2, book3})
+        with self.assertRaisesMessage(
+            IntegrityError, "duplicate key value violates unique constraint"
+        ):
+            ProfileLibrary.objects.create(
+                profile=profile, book=book1, **profile_library_args
+            )
+
 
 class TestBookReadingWorkflow(unittest.TestCase):
     def test_start_event(self):
