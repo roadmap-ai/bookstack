@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
+from books.models.profile import Profile
+
 
 class SignupSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -11,4 +13,5 @@ class SignupSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
+        profile = Profile.objects.create(user=user)
         return user

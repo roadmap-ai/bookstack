@@ -1,4 +1,7 @@
+from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
+
+from books.models.profile import Profile
 
 
 class TestSignup(APITestCase):
@@ -16,6 +19,9 @@ class TestSignup(APITestCase):
                 "email": "mahi87mnit@x.in",
             },
         )
+        user = User.objects.get(username=response.json()["username"])
+        profile = Profile.objects.get(user=user)
+        self.assertIsNotNone(profile)
 
     def test_should_not_let_create_user_without_username(self):
         body = make_user()

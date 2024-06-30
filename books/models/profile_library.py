@@ -20,6 +20,9 @@ class BookReadingWorkflow(StateMachine):
 
 
 class ProfileLibrary(models.Model, MachineMixin):
+    class Meta:
+        unique_together = (("profile"), ("book"))
+
     class OwnershipType(models.TextChoices):
         e_book = "E-Book"
         audio_book = "Audio Book"

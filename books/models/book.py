@@ -3,6 +3,9 @@ from django.db import models
 
 # Create your models here.
 class Book(models.Model):
+    class Meta:
+        unique_together = (("title"), ("author"))
+
     title = models.CharField(max_length=50)
     author = models.CharField(max_length=50)
     publication_year = models.IntegerField(null=True)
