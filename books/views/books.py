@@ -1,6 +1,3 @@
-import json
-
-from django.http import Http404
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -13,19 +10,18 @@ class BooksView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request):
-        data = json.loads(request.body)
-        book_serializer = BookSerializer(data=data)
+        serializer = BookSerializer(data=request.data)
 
-        if not book_serializer.is_valid():
-            return Response(book_serializer.errors, status=400)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        book_serializer.save()
-        return Response(book_serializer.data, status=status.HTTP_201_CREATED)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get(self, request):
         books = Book.objects.all()
-        book_serializer = BookSerializer(books, many=True)
-        return Response(book_serializer.data, status=200)
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class BookView(APIView):
@@ -35,7 +31,7 @@ class BookView(APIView):
         try:
             book = Book.objects.get(pk=pk)
         except Book.DoesNotExist:
-            raise Http404
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        book_serializer = BookSerializer(book)
-        return Response(book_serializer.data, status=200)
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status=status.HTTP_200_OK)
