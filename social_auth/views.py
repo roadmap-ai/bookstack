@@ -1,11 +1,11 @@
-from clients import GoogleClient
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from serializers import GoogleLoginCallbackSerializer
 
 from books.models.profile import Profile
+from social_auth.clients import GoogleClient
+from social_auth.serializers import GoogleLoginCallbackSerializer
 
 
 # Create your views here.

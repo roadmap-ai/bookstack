@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
+from rest_framework.authtoken.models import Token
 
 from books.models import Book, Profile, ProfileLibrary
 from books.tests.views.test_books import make_book
@@ -7,6 +8,10 @@ from books.tests.views.test_signup import make_user
 
 
 class TestProfileLibraryView(APITestCase):
+    def set_client_token(self, user):
+        token = Token.objects.create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION="token " + token.key)
+
     def test_get_with_valid_values(self):
         user = User.objects.create_user(**make_user())
         book1 = Book.objects.create(**make_book())
@@ -14,10 +19,12 @@ class TestProfileLibraryView(APITestCase):
         profile = Profile.objects.create(user_id=user.id)
         ProfileLibrary.objects.create(profile_id=profile.id, book_id=book1.id)
         ProfileLibrary.objects.create(profile_id=profile.id, book_id=book2.id)
-        self.client.login(username="mahi", password="1234")
+
+        self.set_client_token(user)
         response = self.client.get(
             f"/bookstack/profile/{profile.id}/library/?state=to_be_read", follow=True
         )
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json(),
@@ -38,4 +45,3 @@ class TestProfileLibraryView(APITestCase):
                 },
             ],
         )
-        self.client.logout()
