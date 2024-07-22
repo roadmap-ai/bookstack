@@ -1,9 +1,8 @@
-import json
-
 from django.db import IntegrityError
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 from books.exceptions import BookAlreadyExistInLibraryException
 from books.models import ProfileLibrary
@@ -14,27 +13,31 @@ from books.serializers.profile_library import ProfileLibrarySerializer
 @api_view(["GET"])
 @permission_classes([IsAuthenticated, IsOwner])
 def get_profile_library(request, profile_id):
-    profile_library = ProfileLibrary.objects.all().filter(
-        state=request.GET.get("state"), profile_id=profile_id
+    state = request.query_params.get("state")
+    profile_libraries = ProfileLibrary.objects.filter(
+        state=state, profile_id=profile_id
     )
-    profile_serializer = ProfileLibrarySerializer(profile_library, many=True)
-    return Response(profile_serializer.data, status=200)
+
+    profile_libraries_serializer = ProfileLibrarySerializer(
+        profile_libraries, many=True
+    )
+
+    return Response(profile_libraries_serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(["POST"])
 @permission_classes([IsAuthenticated, IsOwner])
 def add_book_to_profile_library(request, profile_id, book_id):
-    data = json.loads(request.body)
-    data["book_id"] = book_id
-    data["profile_id"] = profile_id
-    profile_serializer = ProfileLibrarySerializer(data=data)
+    serializer = ProfileLibrarySerializer(data=request.data)
+    serializer.initial_data["book_id"] = book_id
+    serializer.initial_data["profile_id"] = profile_id
 
-    if not profile_serializer.is_valid():
-        return Response(profile_serializer.errors, status=400)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        profile_serializer.save()
+        serializer.save()
     except IntegrityError:
         raise BookAlreadyExistInLibraryException
 
-    return Response(data=profile_serializer.data, status=201)
+    return Response(data=serializer.data, status=status.HTTP_201_CREATED)

@@ -1,5 +1,4 @@
-import json
-
+from rest_framework import status
 from django.db import IntegrityError
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -10,13 +9,14 @@ from books.serializers.signup import SignupSerializer
 
 @api_view(["POST"])
 def create_user(request):
-    data = json.loads(request.body)
-    signup_serializer = SignupSerializer(data=data)
+    serializer = SignupSerializer(data=request.data)
 
-    if not signup_serializer.is_valid():
-        return Response(signup_serializer.errors, status=400)
+    if not serializer.is_valid():
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     try:
-        signup_serializer.save()
+        serializer.save()
     except IntegrityError:
         raise UserAlreadyExistException
-    return Response(signup_serializer.data, status=201)
+
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
