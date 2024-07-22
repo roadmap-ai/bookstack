@@ -3,7 +3,6 @@ from django.conf import settings
 
 
 class GoogleClient:
-
     class TokenResponse:
         access_token: str
 

@@ -1,11 +1,11 @@
-from rest_framework.decorators import api_view
-from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
-
 from clients import GoogleClient
 from django.contrib.auth.models import User
-from books.models.profile import Profile
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from serializers import GoogleLoginCallbackSerializer
+
+from books.models.profile import Profile
 
 
 # Create your views here.
