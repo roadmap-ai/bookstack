@@ -44,8 +44,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "djmoney",
     "rest_framework",
-    "books.apps.BooksConfig",
+    "rest_framework.authtoken",
     "social_auth.apps.SocialAuthConfig",
+    "books.apps.BooksConfig",
 ]
 
 MIDDLEWARE = [
@@ -138,4 +139,11 @@ DEFAULT_CURRENCY = "USD"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication"
+    ],
 }
+
+GOOGLE_AUTH_CLIENT_ID = os.getenv("GOOGLE_AUTH_CLIENT_ID")
+GOOGLE_AUTH_CLIENT_SECRET = os.getenv("GOOGLE_AUTH_CLIENT_SECRET")
+GOOGLE_AUTH_REDIRECT_URL = os.getenv("GOOGLE_AUTH_REDIRECT_URL")
