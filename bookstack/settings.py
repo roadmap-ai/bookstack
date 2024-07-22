@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "djmoney",
     "rest_framework",
     "books.apps.BooksConfig",
+    "social_auth.apps.SocialAuthConfig",
 ]
 
 MIDDLEWARE = [
