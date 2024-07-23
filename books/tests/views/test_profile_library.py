@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase
 
 from books.models import Book, Profile, ProfileLibrary
 from books.tests.views.test_books import make_book

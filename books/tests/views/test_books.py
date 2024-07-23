@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase
 
 from books.models.book import Book
 from books.tests.models.test_book import make_book
@@ -60,7 +60,7 @@ class TestBookCreateView(APITestCase):
         Book.objects.create(**book1)
         Book.objects.create(**book2)
         Book.objects.create(**book3)
-        
+
         self.set_client_token(user_args)
         response = self.client.get("/bookstack/books/", follow=True)
         self.assertEqual(response.status_code, 200)
@@ -137,7 +137,6 @@ class TestBookGetView(APITestCase):
                 "language": "English",
             },
         )
-
 
     def test_get_should_not_let_user_in_without_login(self):
         book = Book.objects.create(**make_book())
