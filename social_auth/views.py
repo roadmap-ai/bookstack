@@ -14,7 +14,7 @@ def google_callback(request):
     serializers = GoogleLoginCallbackSerializer(data=request.data)
     serializers.is_valid(raise_exception=True)
 
-    code = serializers.code
+    code = serializers.validated_data["code"]
     token_response = GoogleClient.get_token_or_raise(code)
     user_details = GoogleClient.get_user_details_or_raise(token_response.access_token)
 

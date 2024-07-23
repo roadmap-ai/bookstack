@@ -18,6 +18,7 @@ class GoogleClient:
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = requests.post(url=token_url, data=data, headers=headers)
+        response.raise_for_status()
 
         return GoogleClient.TokenResponse(access_token=response.json()["access_token"])
 
@@ -30,6 +31,7 @@ class GoogleClient:
         user_info_url = "https://www.googleapis.com/oauth2/v1/userinfo"
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(url=user_info_url, headers=headers)
+        response.raise_for_status()
 
         return GoogleClient.UserInfoResponse(
             email=response.json()["email"],
