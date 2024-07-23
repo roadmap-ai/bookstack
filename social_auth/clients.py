@@ -6,10 +6,11 @@ class GoogleClient:
     class TokenResponse:
         access_token: str
 
-    def get_token_or_raise(code):
+    def get_token_or_raise(code, code_verifier):
         token_url = "https://oauth2.googleapis.com/token"
         data = {
             "code": code,
+            "code_verifier": code_verifier,
             "client_id": settings.GOOGLE_AUTH_CLIENT_ID,
             "client_secret": settings.GOOGLE_AUTH_CLIENT_SECRET,
             "redirect_url": settings.GOOGLE_AUTH_REDIRECT_URL,

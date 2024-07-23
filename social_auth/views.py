@@ -15,7 +15,8 @@ def google_callback(request):
     serializers.is_valid(raise_exception=True)
 
     code = serializers.validated_data["code"]
-    token_response = GoogleClient.get_token_or_raise(code)
+    code_verifier = serializers.validated_data["code_verifier"]
+    token_response = GoogleClient.get_token_or_raise(code, code_verifier)
     user_details = GoogleClient.get_user_details_or_raise(token_response.access_token)
 
     user, created = User.objects.get_or_create(
