@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from books.models.profile import Profile
 from social_auth.clients import GoogleClient
+from social_auth.models import Token
 from social_auth.serializers import GoogleLoginCallbackSerializer
 
 
@@ -31,6 +31,6 @@ def google_callback(request):
 
     profile, _ = Profile.objects.get_or_create(user=user)
 
-    token = Token.objects.create(user=user)
+    token = Token(user=user).generate()
 
     return Response({"token": token.key})
