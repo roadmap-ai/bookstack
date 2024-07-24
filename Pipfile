@@ -12,6 +12,7 @@ python-statemachine = {extras = ["diagrams"], version = "==2.1.2"}
 djangorestframework = "==3.15.1"
 rest-framework-money-field = "==2.0.0"
 requests = "==2.32.3"
+redis = {extras = ["hiredis"], version = "*"}
 
 [dev-packages]
 black = "==22.12.0"

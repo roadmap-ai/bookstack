@@ -33,4 +33,4 @@ def google_callback(request):
 
     token = Token(user=user).generate()
 
-    return Response({"token": token.key})
+    return Response({"token": token})
