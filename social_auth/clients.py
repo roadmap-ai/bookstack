@@ -25,7 +25,7 @@ class GoogleClient:
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
 
         response = requests.post(url=token_url, data=data, headers=headers)
-        if response.status_code != status.is_success:
+        if not status.is_success(response.status_code):
             logger.error(
                 f"failed to fetch token from google. status: {response.status_code}, body: {response.json()}"
             )
@@ -42,7 +42,7 @@ class GoogleClient:
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(url=user_info_url, headers=headers)
 
-        if response.status_code != status.is_success:
+        if not status.is_success(response.status_code):
             logger.error(
                 f"failed to fetch user details from google. status: {response.status_code}, body: {response.json()}"
             )
