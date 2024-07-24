@@ -16,3 +16,10 @@ services:
     image: redis:7-alpine
     ports:
       - 6379:6379
+
+  php_redis_admin:
+    image: erikdubbelboer/phpredisadmin:latest
+    environment:
+      - REDIS_1_HOST=redis
+    ports:
+      - 8081:80
