@@ -11,5 +11,7 @@ class Token:
 
     def generate(self):
         token = str(uuid.uuid4())
-        cache.set(key=f"token:{token}", value=self.user_id, timeout=settings.TOKEN_EXPIRY_SEC)
+        cache.set(
+            key=f"token:{token}", value=self.user_id, timeout=settings.TOKEN_EXPIRY_SEC
+        )
         return token
