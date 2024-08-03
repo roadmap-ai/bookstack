@@ -4,7 +4,7 @@ from rest_framework.test import APITestCase
 
 from books.models.book import Book
 from books.tests.models.test_book import make_book
-from books.tests.views.test_signup import make_user
+from books.tests import make_user
 from social_auth.models import Token
 
 
