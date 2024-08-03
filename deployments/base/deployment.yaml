@@ -27,14 +27,14 @@ spec:
             - containerPort: 8000
           readinessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /bookstack/health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
           livenessProbe:
             httpGet:
-              path: /api/v1/health
+              path: /bookstack/health
               port: 8000
             initialDelaySeconds: 10
             periodSeconds: 5
