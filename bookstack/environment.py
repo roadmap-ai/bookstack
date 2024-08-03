@@ -10,6 +10,7 @@ required_envs = [
     "ENCRYPTION_KEY",
 ]
 
+
 def validate_required_envs():
     for env in required_envs:
         if env not in os.environ:

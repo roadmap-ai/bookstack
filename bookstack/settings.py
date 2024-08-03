@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+
 from .environment import validate_required_envs
 
 load_dotenv()
