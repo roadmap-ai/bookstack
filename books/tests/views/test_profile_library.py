@@ -1,16 +1,23 @@
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+from django.core.cache import cache
 from rest_framework.test import APITestCase
 
 from books.models import Book, Profile, ProfileLibrary
 from books.tests.views.test_books import make_book
 from books.tests.views.test_signup import make_user
+from social_auth.models import Token
 
 
 class TestProfileLibraryView(APITestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
     def set_client_token(self, user):
-        token = Token.objects.create(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION="token " + token.key)
+        token = Token().create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION="token " + token)
 
     def test_get_with_valid_values(self):
         user = User.objects.create_user(**make_user())

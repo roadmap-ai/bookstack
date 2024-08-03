@@ -1,4 +1,3 @@
-from curses.ascii import US
 from unittest.mock import MagicMock, patch
 
 from django.contrib.auth.models import User

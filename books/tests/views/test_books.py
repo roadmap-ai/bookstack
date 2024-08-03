@@ -1,17 +1,24 @@
 from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
+from django.core.cache import cache
 from rest_framework.test import APITestCase
 
 from books.models.book import Book
 from books.tests.models.test_book import make_book
 from books.tests.views.test_signup import make_user
+from social_auth.models import Token
 
 
 class TestBookCreateView(APITestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
     def set_client_token(self, user_args=make_user()):
         user = User.objects.create_user(**user_args)
-        token = Token.objects.create(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION="token " + token.key)
+        token = Token().create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION="token " + token)
 
     def test_post_with_valid_values(self):
         body = make_book()
@@ -37,7 +44,7 @@ class TestBookCreateView(APITestCase):
         response = self.client.post(
             "/bookstack/books/", data=body, format="json", follow=True
         )
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(), {"detail": "Authentication credentials were not provided."}
         )
@@ -93,7 +100,7 @@ class TestBookCreateView(APITestCase):
 
     def test_get_should_not_let_user_in_without_login(self):
         response = self.client.get("/bookstack/books/", follow=True)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(), {"detail": "Authentication credentials were not provided."}
         )
@@ -102,10 +109,16 @@ class TestBookCreateView(APITestCase):
 
 
 class TestBookGetView(APITestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
     def set_client_token(self, user_args=make_user()):
         user = User.objects.create_user(**user_args)
-        token = Token.objects.create(user=user)
-        self.client.credentials(HTTP_AUTHORIZATION="token " + token.key)
+        token = Token().create(user=user)
+        self.client.credentials(HTTP_AUTHORIZATION="token " + token)
 
     def test_get_for_valid_request(self):
         user_args = make_user()
@@ -141,7 +154,7 @@ class TestBookGetView(APITestCase):
     def test_get_should_not_let_user_in_without_login(self):
         book = Book.objects.create(**make_book())
         response = self.client.get(f"/bookstack/books/{book.id}", follow=True, pk=1)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(
             response.json(), {"detail": "Authentication credentials were not provided."}
         )
