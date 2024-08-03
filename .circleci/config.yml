@@ -125,7 +125,7 @@ workflows:
       - lint
       - test
       - docker/publish:
-          requires: [ lint, test ]
+          requires: [ test ]
           image: << pipeline.parameters.image-name >>
           registry: registry.digitalocean.com/roadmap-ai-container-registry
           context:
