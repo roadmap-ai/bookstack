@@ -14,8 +14,10 @@ import os
 from pathlib import Path
 
 from dotenv import load_dotenv
+from .environment import validate_required_envs
 
 load_dotenv()
+validate_required_envs()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -174,6 +176,6 @@ CACHES = {
     }
 }
 
-TOKEN_EXPIRY_SEC = os.getenv("TOKEN_EXPIRY_SEC", 60)
+TOKEN_EXPIRY_SEC = os.getenv("TOKEN_EXPIRY_SEC", 10800)
 
 ENCRYPTION_KEY = os.getenv("ENCRYPTION_KEY")
