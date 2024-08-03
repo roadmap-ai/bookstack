@@ -142,3 +142,4 @@ workflows:
           name: kube-apply/dev
           deployment-env: dev
           requires: [ hold-kube-dev-apply ]
+          <<: *common-secrets-context
