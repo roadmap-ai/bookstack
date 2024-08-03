@@ -4,13 +4,11 @@ namespace: dev
 
 configMapGenerator:
   - name: bookstack-app-config
-    behavior: replace
     files:
       - app.env
 
 secretGenerator:
   - name: bookstack-app-secrets
-    behavior: replace
     envs:
       - app-secrets.env
 
