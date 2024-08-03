@@ -1,27 +1,40 @@
 import secrets
 
+from cryptography.fernet import Fernet
 from django.conf import settings
 from django.core.cache import cache
-from cryptography.fernet import Fernet
 
 
 class Token:
-    def create(self, user):
+    @staticmethod
+    def encrypt_token(token: str, encryption_key: bytes) -> bytes:
+        cipher = Fernet(encryption_key)
+        return cipher.encrypt(token.encode())
+
+    @staticmethod
+    def decrypt_token(encrypted_token: bytes, encryption_key: bytes) -> str:
+        cipher = Fernet(encryption_key)
+        return cipher.decrypt(encrypted_token).decode()
+
+    @staticmethod
+    def generate_cache_key(token: str) -> str:
+        return f"token:{token}"
+
+    def create(self, user) -> str:
         token = secrets.token_urlsafe(32)
         cache.set(
-            key=f"token:{token}", value=user.id, timeout=settings.TOKEN_EXPIRY_SEC
+            self.generate_cache_key(token),
+            user.id,
+            timeout=settings.TOKEN_EXPIRY_SEC,
         )
 
-        enc_key = settings.ENCRYPTION_KEY
-        f = Fernet(enc_key)
-        enc_token = f.encrypt(token.encode()).decode()
+        return self.encrypt_token(token, settings.ENCRYPTION_KEY).decode()
 
-        return enc_token
+    def get_user_id(self, encrypted_token: str) -> int:
+        token = self.decrypt_token(
+            encrypted_token.encode(),
+            settings.ENCRYPTION_KEY,
+        )
 
-    def get_user_id(self, enc_token):
-
-        enc_key = settings.ENCRYPTION_KEY
-        f = Fernet(enc_key)
-        token = f.decrypt(enc_token.encode()).decode()
-
-        return cache.get(f"token:{token}")
+        cache_key = self.generate_cache_key(token)
+        return cache.get(cache_key)
