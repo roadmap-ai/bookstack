@@ -1,13 +1,12 @@
----
 apiVersion: v1
 kind: Service
 metadata:
-  name: bookstack
+  name: bookstack-app
   labels:
-    app: bookstack
+    app: bookstack-app
 spec:
   type: ClusterIP
   ports:
     - port: 8000
   selector:
-    app: bookstack
+    app: bookstack-app

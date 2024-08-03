@@ -1,5 +1,47 @@
 version: 2.1
 
+orbs:
+  kubernetes: circleci/kubernetes@1.3.1
+  docker: circleci/docker@2.6.0
+
+parameters:
+  image-name:
+    type: string
+    default: bookstack
+
+common-secrets-context: &common-secrets-context
+  context:
+    - tailscale-token
+    - 1password-cli
+    - kube-dev-config
+
+commands:
+  setup-vpn-1password-env:
+    description: install and setup latest tailscale for the pipeline
+    steps:
+      - run:
+          name: setup tailscale, kustomize and 1password cli
+          command: |
+            SHA=$(git rev-parse HEAD)
+            SHORTSHA="${SHA:0:7}"
+
+            # install tailscale
+            curl -fsSL https://tailscale.com/install.sh | sh
+            sudo tailscale login --authkey $TS_AUTH_KEY --hostname << pipeline.parameters.image-name >>-circleci-$SHORTSHA-$CIRCLE_BUILD_NUM
+
+            # instal kustomize
+            curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+
+            # instal 1password cli
+            ARCH="amd64" && \
+            wget "https://cache.agilebits.com/dist/1P/op2/pkg/v2.29.0/op_linux_${ARCH}_v2.29.0.zip" -O op.zip && \
+            unzip op.zip
+
+            # install colordiff
+            sudo apt-get install -y colordiff
+            echo 'export PATH=$(pwd):${PATH}' >> $BASH_ENV
+            echo 'export KUBECTL_EXTERNAL_DIFF="colordiff -N -u"' >> $BASH_ENV
+
 jobs:
   lint:
     docker:
@@ -25,8 +67,78 @@ jobs:
           pipenv install
           pipenv run python manage.py test
 
+  kube-diff:
+    machine:
+      image: ubuntu-2004:current
+    parameters:
+      deployment-env:
+        type: string
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - kubernetes/install-kubeconfig
+      - setup-vpn-1password-env
+      - run:
+          name: fetch secrets
+          command: |
+            cd deployments/<< parameters.deployment-env >> && \
+            op inject -i app-secrets.env.template -o app-secrets.env
+      - run:
+          name: set image version to deploy
+          command: |
+            cd deployments/<< parameters.deployment-env >> && \
+            kustomize edit set image << pipeline.parameters.image-name >>=registry.digitalocean.com/roadmap-ai-container-registry/<< pipeline.parameters.image-name >>:$CIRCLE_SHA1
+      - run:
+          name: Run kubectl diff -k
+          command: kubectl diff -k deployments/<< parameters.deployment-env >> 2>&1 || true
+      - run:
+          name: Dry run
+          command: kubectl apply --dry-run=server -k deployments/<< parameters.deployment-env >>
+
+  kube-apply:
+    machine:
+      image: ubuntu-2004:current
+    parameters:
+      deployment-env:
+        type: string
+    steps:
+      - checkout
+      - kubernetes/install-kubectl
+      - kubernetes/install-kubeconfig
+      - setup-vpn-1password-env
+      - run:
+          name: set image version to deploy
+          command: |
+            cd deployments/<< parameters.deployment-env >> && \
+            kustomize edit set image << pipeline.parameters.image-name >>=registry.digitalocean.com/roadmap-ai-container-registry/<< pipeline.parameters.image-name >>:$CIRCLE_SHA1
+      - run:
+          name: fetch secrets
+          command: |
+            cd deployments/<< parameters.deployment-env >> && \
+            op inject -i app-secrets.env.template -o app-secrets.env
+      - run:
+          name: Run kubectl apply
+          command: kubectl apply -k deployments/<< parameters.deployment-env >>
 workflows:
   cx-pipeline:
     jobs:
       - lint
       - test
+      - docker/publish:
+          requires: [ test ]
+          image: << pipeline.parameters.image-name >>
+          registry: registry.digitalocean.com/roadmap-ai-container-registry
+          context:
+            - docker-registry-creds
+      - kube-diff:
+          name: kube-diff/dev
+          deployment-env: dev
+          requires: [ docker/publish ]
+          <<: *common-secrets-context
+      - hold-kube-dev-apply:
+          type: approval
+          requires: [ kube-diff/dev ]
+      - kube-apply:
+          name: kube-apply/dev
+          deployment-env: dev
+          requires: [ hold-kube-dev-apply ]
