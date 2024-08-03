@@ -1,6 +1,6 @@
 import secrets
 
-from cryptography.fernet import Fernet
+from cryptography.fernet import Fernet, InvalidToken
 from django.conf import settings
 from django.core.cache import cache
 
@@ -13,8 +13,11 @@ class Token:
 
     @staticmethod
     def decrypt_token(encrypted_token: bytes, encryption_key: bytes) -> str:
-        cipher = Fernet(encryption_key)
-        return cipher.decrypt(encrypted_token).decode()
+        try:
+            cipher = Fernet(encryption_key)
+            return cipher.decrypt(encrypted_token).decode()
+        except InvalidToken:
+            return ""
 
     @staticmethod
     def generate_cache_key(token: str) -> str:
