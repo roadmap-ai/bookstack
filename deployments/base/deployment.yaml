@@ -39,10 +39,6 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
             timeoutSeconds: 3
-          resources:
-            limits:
-              cpu: "200m"
-              memory: "256Mi"
       initContainers:
         - name: init-migrations
           image: bookstack:latest
@@ -53,7 +49,3 @@ spec:
                 name: bookstack-app-config
             - secretRef:
                 name: bookstack-app-secrets
-          resources:
-            limits:
-              cpu: "200m"
-              memory: "256Mi"
