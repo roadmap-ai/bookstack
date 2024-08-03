@@ -3,7 +3,7 @@ from rest_framework.response import Response
 
 from social_auth.clients import GoogleClient
 from social_auth.serializers import GoogleLoginCallbackSerializer
-from social_auth.service import UserAuthService
+from social_auth.services import UserAuthService
 
 
 # Create your views here.

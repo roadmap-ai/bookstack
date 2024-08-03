@@ -8,7 +8,7 @@ from django.test import TestCase
 from books.models.profile import Profile
 from social_auth.clients import GoogleClient
 from social_auth.models import Token
-from social_auth.service import UserAuthService
+from social_auth.services import UserAuthService
 
 
 class TestUserAuthService(TestCase):
@@ -82,7 +82,7 @@ class TestUserAuthService(TestCase):
                 "test_code", "test_code_verifier", self.authclient
             )
 
-    @patch("social_auth.service.Profile.objects.get_or_create")
+    @patch("social_auth.services.Profile.objects.get_or_create")
     def test_user_does_not_get_created_if_profile_creation_fails(
         self, mock_profile_create
     ):
