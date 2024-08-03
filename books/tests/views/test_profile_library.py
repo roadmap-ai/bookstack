@@ -3,8 +3,8 @@ from django.core.cache import cache
 from rest_framework.test import APITestCase
 
 from books.models import Book, Profile, ProfileLibrary
-from books.tests.views.test_books import make_book
 from books.tests import make_user
+from books.tests.views.test_books import make_book
 from social_auth.models import Token
 
 
